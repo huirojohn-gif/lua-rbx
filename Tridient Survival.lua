@@ -29,15 +29,6 @@ menuFrame.BorderColor3 = Color3.fromRGB(255, 255, 255)
 menuFrame.Visible = true
 menuFrame.Parent = screenGui
 
--- Тень/свечение
-local glow = Instance.new("Frame")
-glow.Size = UDim2.new(1, 20, 1, 20)
-glow.Position = UDim2.new(0, -10, 0, -10)
-glow.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-glow.BackgroundTransparency = 0.9
-glow.BorderSizePixel = 0
-glow.Parent = menuFrame
-
 -- Заголовок
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 50)
@@ -142,7 +133,6 @@ end)
 
 -- Открытие/закрытие по Insert
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if gameProcessed then return end
     if input.KeyCode == Enum.KeyCode.Insert then
         menuVisible = not menuVisible
         menuFrame.Visible = menuVisible
