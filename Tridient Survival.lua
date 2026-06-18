@@ -1,26 +1,163 @@
 -- TRIDENT SURVIVAL - RAGE MODE
 -- ESP, Skeleton ESP, Distance
+-- Открытие по Insert
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
 local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 
 local espEnabled = false
 local skeletonEnabled = false
 local distanceEnabled = false
+local menuVisible = true
 
 -- Создание GUI
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "TridentESP"
 screenGui.Parent = LocalPlayer.PlayerGui
 
+-- Создание меню
+local menuFrame = Instance.new("Frame")
+menuFrame.Size = UDim2.new(0, 400, 0, 350)
+menuFrame.Position = UDim2.new(0.5, -200, 0.5, -175)
+menuFrame.BackgroundColor3 = Color3.fromRGB(44, 44, 44)
+menuFrame.BackgroundTransparency = 0.05
+menuFrame.BorderSizePixel = 2
+menuFrame.BorderColor3 = Color3.fromRGB(255, 255, 255)
+menuFrame.Visible = true
+menuFrame.Parent = screenGui
+
+-- Тень/свечение
+local glow = Instance.new("Frame")
+glow.Size = UDim2.new(1, 20, 1, 20)
+glow.Position = UDim2.new(0, -10, 0, -10)
+glow.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+glow.BackgroundTransparency = 0.9
+glow.BorderSizePixel = 0
+glow.Parent = menuFrame
+
+-- Заголовок
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 50)
+title.Position = UDim2.new(0, 0, 0, 5)
+title.BackgroundTransparency = 1
+title.TextColor3 = Color3.fromRGB(240, 240, 240)
+title.TextSize = 32
+title.Font = Enum.Font.GothamBold
+title.Text = "⚡ TRIDENT"
+title.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+title.TextStrokeTransparency = 0
+title.Parent = menuFrame
+
+-- Разделитель
+local divider = Instance.new("Frame")
+divider.Size = UDim2.new(0.9, 0, 0, 2)
+divider.Position = UDim2.new(0.05, 0, 0, 60)
+divider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+divider.BorderSizePixel = 0
+divider.Parent = menuFrame
+
+-- Кнопка ESP
+local espBtn = Instance.new("TextButton")
+espBtn.Size = UDim2.new(0.9, 0, 0, 45)
+espBtn.Position = UDim2.new(0.05, 0, 0, 75)
+espBtn.BackgroundColor3 = Color3.fromRGB(58, 58, 58)
+espBtn.BorderSizePixel = 2
+espBtn.BorderColor3 = Color3.fromRGB(255, 255, 255)
+espBtn.TextColor3 = Color3.fromRGB(208, 208, 208)
+espBtn.TextSize = 22
+espBtn.Font = Enum.Font.GothamMedium
+espBtn.Text = "ESP [OFF]"
+espBtn.Parent = menuFrame
+
+-- Кнопка Skeleton
+local skeletonBtn = Instance.new("TextButton")
+skeletonBtn.Size = UDim2.new(0.9, 0, 0, 45)
+skeletonBtn.Position = UDim2.new(0.05, 0, 0, 130)
+skeletonBtn.BackgroundColor3 = Color3.fromRGB(58, 58, 58)
+skeletonBtn.BorderSizePixel = 2
+skeletonBtn.BorderColor3 = Color3.fromRGB(255, 255, 255)
+skeletonBtn.TextColor3 = Color3.fromRGB(208, 208, 208)
+skeletonBtn.TextSize = 22
+skeletonBtn.Font = Enum.Font.GothamMedium
+skeletonBtn.Text = "ESP Скелетон [OFF]"
+skeletonBtn.Parent = menuFrame
+
+-- Кнопка Distance
+local distBtn = Instance.new("TextButton")
+distBtn.Size = UDim2.new(0.9, 0, 0, 45)
+distBtn.Position = UDim2.new(0.05, 0, 0, 185)
+distBtn.BackgroundColor3 = Color3.fromRGB(58, 58, 58)
+distBtn.BorderSizePixel = 2
+distBtn.BorderColor3 = Color3.fromRGB(255, 255, 255)
+distBtn.TextColor3 = Color3.fromRGB(208, 208, 208)
+distBtn.TextSize = 22
+distBtn.Font = Enum.Font.GothamMedium
+distBtn.Text = "Расстояние [OFF]"
+distBtn.Parent = menuFrame
+
+-- Футер
+local footer = Instance.new("TextLabel")
+footer.Size = UDim2.new(1, 0, 0, 30)
+footer.Position = UDim2.new(0, 0, 1, -30)
+footer.BackgroundTransparency = 1
+footer.TextColor3 = Color3.fromRGB(170, 170, 170)
+footer.TextSize = 14
+footer.Font = Enum.Font.Gotham
+footer.Text = "SURVIVAL · RAGE  |  INSERT"
+footer.Parent = menuFrame
+
+-- Функции обновления кнопок
+local function updateButtons()
+    espBtn.Text = espEnabled and "ESP [ON]" or "ESP [OFF]"
+    espBtn.BorderColor3 = espEnabled and Color3.fromRGB(0, 255, 136) or Color3.fromRGB(255, 255, 255)
+    espBtn.BackgroundColor3 = espEnabled and Color3.fromRGB(30, 80, 50) or Color3.fromRGB(58, 58, 58)
+    
+    skeletonBtn.Text = skeletonEnabled and "ESP Скелетон [ON]" or "ESP Скелетон [OFF]"
+    skeletonBtn.BorderColor3 = skeletonEnabled and Color3.fromRGB(0, 255, 136) or Color3.fromRGB(255, 255, 255)
+    skeletonBtn.BackgroundColor3 = skeletonEnabled and Color3.fromRGB(30, 80, 50) or Color3.fromRGB(58, 58, 58)
+    
+    distBtn.Text = distanceEnabled and "Расстояние [ON]" or "Расстояние [OFF]"
+    distBtn.BorderColor3 = distanceEnabled and Color3.fromRGB(0, 255, 136) or Color3.fromRGB(255, 255, 255)
+    distBtn.BackgroundColor3 = distanceEnabled and Color3.fromRGB(30, 80, 50) or Color3.fromRGB(58, 58, 58)
+end
+
+-- Нажатия кнопок
+espBtn.MouseButton1Click:Connect(function()
+    espEnabled = not espEnabled
+    updateButtons()
+end)
+
+skeletonBtn.MouseButton1Click:Connect(function()
+    skeletonEnabled = not skeletonEnabled
+    updateButtons()
+end)
+
+distBtn.MouseButton1Click:Connect(function()
+    distanceEnabled = not distanceEnabled
+    updateButtons()
+end)
+
+-- Открытие/закрытие по Insert
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.Insert then
+        menuVisible = not menuVisible
+        menuFrame.Visible = menuVisible
+    end
+end)
+
+-- Создание ESP объектов
+local espObjects = {}
+
 local function createBox(plr)
     local frame = Instance.new("Frame")
     frame.Size = UDim2.new(0, 50, 0, 80)
     frame.BackgroundColor3 = Color3.fromRGB(0, 255, 136)
     frame.BackgroundTransparency = 0.5
-    frame.BorderSizePixels = 2
+    frame.BorderSizePixel = 2
     frame.BorderColor3 = Color3.fromRGB(255, 255, 255)
     frame.Visible = false
     frame.Parent = screenGui
@@ -74,8 +211,6 @@ local function createBox(plr)
     }
 end
 
-local espObjects = {}
-
 for _, plr in ipairs(Players:GetPlayers()) do
     if plr ~= LocalPlayer then
         espObjects[plr] = createBox(plr)
@@ -112,15 +247,12 @@ RunService.RenderStepped:Connect(function()
                 obj.frame.Position = UDim2.new(0, pos.X - (size * 1.5) / 2, 0, pos.Y - size * 1.1)
                 obj.frame.Visible = true
                 
-                -- Цвет в зависимости от здоровья
                 local health = humanoid.Health / humanoid.MaxHealth
                 obj.frame.BackgroundColor3 = Color3.fromRGB(255 - (255 * health), 255 * health, 0)
                 
-                -- Имя
                 obj.nameLabel.Text = plr.Name
                 obj.nameLabel.TextSize = math.clamp(size * 0.25, 10, 18)
                 
-                -- Расстояние
                 if distanceEnabled then
                     obj.distanceLabel.Visible = true
                     obj.distanceLabel.Text = tostring(math.floor(distance)) .. "m"
@@ -129,7 +261,6 @@ RunService.RenderStepped:Connect(function()
                     obj.distanceLabel.Visible = false
                 end
                 
-                -- Скелетон (упрощенный 2D)
                 if skeletonEnabled then
                     obj.skeleton.Visible = true
                     obj.skeleton2.Visible = true
@@ -150,24 +281,5 @@ RunService.RenderStepped:Connect(function()
     end
 end)
 
--- Функции для управления из консоли / через bind
-_G.ToggleESP = function()
-    espEnabled = not espEnabled
-    print("ESP: " .. tostring(espEnabled))
-end
-
-_G.ToggleSkeleton = function()
-    skeletonEnabled = not skeletonEnabled
-    print("Skeleton ESP: " .. tostring(skeletonEnabled))
-end
-
-_G.ToggleDistance = function()
-    distanceEnabled = not distanceEnabled
-    print("Distance: " .. tostring(distanceEnabled))
-end
-
 print("TRIDENT RAGE MODE LOADED")
-print("Commands:")
-print("_G.ToggleESP() - Вкл/Выкл ESP")
-print("_G.ToggleSkeleton() - Вкл/Выкл скелетон")
-print("_G.ToggleDistance() - Вкл/Выкл расстояние")
+print("Нажмите INSERT для открытия/закрытия меню")
